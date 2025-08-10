@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录系统</title>
+</head>
+<style>
+    body{
+        background-color: aliceblue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0; /* 新增：清除body默认外边距 */
+    }
+    .zz{
+        background-color: cadetblue;
+        width: 300px;
+        height: 300px; 
+        text-align: center;
+        border: none;
+        border-radius: 20px;
+        margin: 0;
+        /* 移除position: absolute，避免影响flex居中 */
+    }
+    .zz h1{
+        text-align: center;
+        color: white;
+        border: none;
+        margin: 0;
+        margin-top: 40px;
+    }
+
+    .zz input{
+        width: 200px;
+        height: 30px;
+        border-radius: 5px;
+        border: none;
+        text-align: center;
+        margin-top: 10px;
+        display: block; /* 新增：让输入框单独占一行 */
+        margin-left: auto; /* 新增：配合margin-right实现水平居中 */
+        margin-right: auto;
+    }
+    .button-group {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    .zz input[type="button"]{
+        background-color: yellow;
+        color: black;
+        cursor: pointer;
+        width: 95px;
+        display: inline-block;
+        margin: 0;
+    }
+
+    .zz input[type="button"]:hover {
+        background-color: deepskyblue;
+    }
+    .cc{
+        margin-top: 15px;
+        padding: 8px;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        display: none;
+        margin-left: auto;
+        margin-right: auto;
+        width: 200px;
+    }
+    .success {
+        background-color: #4CAF50;
+    }
+
+    .error {
+        background-color: #f44336;
+    }
+
+</style>
+<body>
+    <div class="zz">
+        <h1>登入系统</h1>
+        <input type="text" id="ww" placeholder="用户名">
+        <input type="password" id="xx" placeholder="密码">
+        <div class="button-group">
+            <!-- 绑定点击事件 -->
+            <input type="button" value="登录" onclick="login()">
+            <input type="button" value="注册" onclick="register()">
+        </div>
+        <div id="cc" class="cc"></div>
+    </div>
+    <script>
+        // 变量名与HTML中的id保持一致
+        const ww = document.getElementById("ww"); // 用户名输入框
+        const xx = document.getElementById("xx"); // 密码输入框
+        const cc = document.getElementById("cc"); // 提示信息元素
+        
+        // 改为对象结构存储用户（键值对形式）
+        let registeredUsers = {}; 
+        
+        // 处理密码函数
+        function processPassword(password){  
+            return password.trim(); // 去除密码两端的空格
+        }
+        
+        // 修复函数名大小写（P大写）
+        function validatePassword(password) { 
+            const processed = processPassword(password);
+            return processed.length >= 6; // 密码长度至少为6
+        }
+        
+        // 修复提示信息函数中的变量名
+        function showMessage(text, isError = false) { 
+            cc.textContent = text; // 使用正确的cc变量
+            cc.style.display = 'block';
+            cc.classList.remove('success', 'error');
+            cc.classList.add(isError ? 'error' : 'success');
+            
+            setTimeout(() => {
+                cc.style.display = 'none';
+            }, 3000);
+        }
+
+        function login() {
+            // 使用正确的变量名ww和xx
+            const username = ww.value.trim();
+            const password = xx.value;
+            
+            if (!username) {
+                showMessage('请输入用户名', true);
+                return;
+            }
+            
+            if (!password) {
+                showMessage('请输入密码', true);
+                return;
+            }
+            
+            const processedPassword = processPassword(password);
+            
+            // 检查用户是否存在
+            if (!registeredUsers[username]) {
+                showMessage('用户不存在', true);
+                return;
+            }
+            
+            if (registeredUsers[username] !== processedPassword) {
+                showMessage('密码错误', true);
+                return;
+            }
+            
+            showMessage('登录成功！');
+        }
+
+        function register() {
+            const username = ww.value.trim();
+            const password = xx.value;
+            
+            if (!username) {
+                showMessage('请输入用户名', true);
+                return;
+            }
+            
+            if (!password) {
+                showMessage('请输入密码', true);
+                return;
+            }
+            
+            if (!validatePassword(password)) {
+                showMessage('密码长度不能少于6位', true);
+                return;
+            }
+            
+            if (registeredUsers[username]) {
+                showMessage('用户名已存在', true);
+                return;
+            }
+            
+            registeredUsers[username] = processPassword(password);
+            showMessage('注册成功！可以登录了');
+            xx.value = ''; // 清空密码框
+        }
+
+        // 按回车键登录
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>
